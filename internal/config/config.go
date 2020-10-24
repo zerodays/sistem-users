@@ -1,8 +1,8 @@
 package config
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	"errors"
+	"github.com/dgrijalva/jwt-go"
 	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"log"
@@ -54,10 +54,11 @@ func Load() {
 		log.Fatal(err)
 	}
 
-	// Load secret.
-	err = loadSecret()
+	// Load keys used for signing.
+	err = loadSigningKeys()
 	if err != nil {
-		log.Fatalf("Could not read secret: %v", err)
+		log.Printf("Could not load signing keys (error: %s). You can generate them with `genkeys` command.\n",
+			err.Error())
 	}
 }
 
@@ -96,62 +97,57 @@ func createDefaultConfig(path string) error {
 	return nil
 }
 
-// loadSecret loads secret from file if it exists. If secret does not yet exists, new
-// secret is created.
-func loadSecret() error {
-	secretPath := filepath.Join(WorkDir, "conf", "secret.txt")
+// loadSigningKeys loads private and public RSA key used for signing authentication tokens.
+func loadSigningKeys() error {
+	// Open file for private key.
+	privKeyPath := filepath.Join(WorkDir, "conf", "privkey.pem")
+	privFile, err := os.Open(privKeyPath)
+	if err != nil {
+		return err
+	}
+	defer privFile.Close()
 
-	if _, err := os.Stat(secretPath); os.IsNotExist(err) {
-		// Create new secret since it doesn't exist.
-		log.Printf("No secret found. Creating default secret at \"%s\"\n", secretPath)
+	// Read the file.
+	privKey, err := ioutil.ReadAll(privFile)
+	if err != nil {
+		return err
+	}
 
-		// Create new file for secret.
-		err := os.MkdirAll(filepath.Dir(secretPath), os.ModePerm)
-		if err != nil {
-			return err
-		}
+	// Parse private key.
+	Login.SigningPrivateKey, err = jwt.ParseRSAPrivateKeyFromPEM(privKey)
+	if err != nil {
+		return err
+	}
 
-		f, err := os.Create(secretPath)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
+	// Open file for public key
+	pubKeyPath := filepath.Join(WorkDir, "conf", "pubkey.pem")
+	pubFile, err := os.Open(pubKeyPath)
+	if err != nil {
+		return err
+	}
+	defer pubFile.Close()
 
-		// Get random bytes to be used as a secret.
-		secretBytes := make([]byte, 128)
-		_, err = rand.Read(secretBytes)
-		if err != nil {
-			return err
-		}
+	// Read the file.
+	pubKey, err := ioutil.ReadAll(pubFile)
+	if err != nil {
+		return err
+	}
 
-		// Encode secret to string.
-		secret := hex.EncodeToString(secretBytes)
+	// Parse public key.
+	Login.SigningPublicKey, err = jwt.ParseRSAPublicKeyFromPEM(pubKey)
+	if err != nil {
+		return err
+	}
 
-		// Write secret to file.
-		_, err = f.WriteString(secret)
-		if err != nil {
-			return err
-		}
+	// Check if private key is valid.
+	err = Login.SigningPrivateKey.Validate()
+	if err != nil {
+		return err
+	}
 
-		// Set secret.
-		Secret = hexString(secret)
-	} else {
-		// Read secret from existing file.
-		// Open the file.
-		f, err := os.Open(secretPath)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		// Read secret from file.
-		secret, err := ioutil.ReadAll(f)
-		if err != nil {
-			return err
-		}
-
-		// Set secret.
-		Secret = hexString(secret)
+	// Check if private and public keys match.
+	if !Login.SigningPrivateKey.PublicKey.Equal(Login.SigningPublicKey) {
+		return errors.New("private and public keys mismatch")
 	}
 
 	return nil

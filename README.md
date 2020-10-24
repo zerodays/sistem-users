@@ -20,6 +20,12 @@ For other options see help with
 ./users help
 ```
 
+## Signing keys
+For running the server you need to have RSA signing keys that are used to sign authentication tokens.
+Private and public key pair can be generated using `./users genkeys` command. See `./users genkeys --help` for help.
+
+If you wish to provide you own keys, put them in `<workdir>/conf/privkey.pem` and `<workdir/conf/pubkey.pem`.
+
 ## Developing
 For development postgresql database should be started as before
 ```

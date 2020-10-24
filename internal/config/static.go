@@ -1,8 +1,6 @@
 package config
 
-import "encoding/hex"
-
-type hexString string
+import "crypto/rsa"
 
 var (
 	Server struct {
@@ -32,14 +30,11 @@ var (
 
 	Login struct {
 		TokenTtl int `ini:"TOKEN_TTL"`
+
+		// Private and public keys used for signing tokens.
+		SigningPrivateKey *rsa.PrivateKey
+		SigningPublicKey  *rsa.PublicKey
 	}
 
 	WorkDir string
-	Secret  hexString
 )
-
-// Bytes returns bytes array that is represented by hex string s.
-func (s hexString) Bytes() []byte {
-	bytes, _ := hex.DecodeString(string(s))
-	return bytes
-}
