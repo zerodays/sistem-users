@@ -6,6 +6,8 @@ import (
 	"github.com/zerodays/sistem-users/internal/config"
 	"github.com/zerodays/sistem-users/internal/database"
 	"github.com/zerodays/sistem-users/internal/logger"
+	"github.com/zerodays/sistem-users/internal/router"
+	"net/http"
 	"os"
 )
 
@@ -36,10 +38,13 @@ func main() {
 	// Commands for CLI app.
 	app.Commands = []*cli.Command{
 		{
-			Name:  "test",
-			Usage: "Test command to see if everything is working",
+			Name:  "serve",
+			Usage: "Start the sever.",
 			Action: func(_ *cli.Context) error {
-				fmt.Println("test")
+				r := router.NewRouter()
+
+				listenAddress := fmt.Sprintf("%s:%d", config.Server.ListenAddress, config.Server.Port)
+				logger.Log.Fatal().Err(http.ListenAndServe(listenAddress, r)).Send()
 				return nil
 			},
 		},
