@@ -11,7 +11,7 @@ cmd = "go build -o ./tmp/users github.com/zerodays/sistem-users/cmd/users"
 # Binary file yields from `cmd`.
 bin = "tmp/users"
 # Customize binary.
-full_bin = "./tmp/users test"
+full_bin = "./tmp/users serve"
 # Watch these filename extensions.
 include_ext = ["go", "tpl", "tmpl", "html"]
 # Ignore these filename extensions or directories.
