@@ -9,31 +9,31 @@ import (
 func addRoute(router *mux.Router, r Route) {
 	// Add handlers for specified methods.
 	if r.GET != nil {
-		router.Handle(r.Path, addMiddleware(r.GET, r.CustomContentType)).
+		router.Handle(r.Path, addMiddleware(r.GET, r.AuthorizedOnly, r.CustomContentType)).
 			Methods("GET").
 			Name(r.Name)
 	}
 
 	if r.PUT != nil {
-		router.Handle(r.Path, addMiddleware(r.PUT, r.CustomContentType)).
+		router.Handle(r.Path, addMiddleware(r.PUT, r.AuthorizedOnly, r.CustomContentType)).
 			Methods("PUT").
 			Name(r.Name)
 	}
 
 	if r.POST != nil {
-		router.Handle(r.Path, addMiddleware(r.POST, r.CustomContentType)).
+		router.Handle(r.Path, addMiddleware(r.POST, r.AuthorizedOnly, r.CustomContentType)).
 			Methods("POST").
 			Name(r.Name)
 	}
 
 	if r.DELETE != nil {
-		router.Handle(r.Path, addMiddleware(r.DELETE, r.CustomContentType)).
+		router.Handle(r.Path, addMiddleware(r.DELETE, r.AuthorizedOnly, r.CustomContentType)).
 			Methods("DELETE").
 			Name(r.Name)
 	}
 
 	// Add CORS handle for OPTIONS request
-	router.Handle(r.Path, addMiddleware(http.HandlerFunc(corsHandler), false)).
+	router.Handle(r.Path, addMiddleware(http.HandlerFunc(corsHandler), false, false)).
 		Methods("OPTIONS")
 }
 

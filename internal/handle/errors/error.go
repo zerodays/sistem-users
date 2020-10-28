@@ -28,4 +28,9 @@ var (
 		StatusCode: http.StatusInternalServerError,
 		Code:       "user_login",
 	}
+
+	InvalidOldPassword = ResponseError{
+		StatusCode: http.StatusBadRequest,
+		Code:       "invalid_old_password",
+	}
 )

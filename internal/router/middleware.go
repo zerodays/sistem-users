@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/justinas/alice"
 	"github.com/rs/zerolog/hlog"
+	"github.com/zerodays/sistem-auth/middleware"
 	"github.com/zerodays/sistem-users/internal/logger"
 	"net/http"
 	"time"
@@ -55,14 +56,18 @@ func responseTypeHeaderMiddleware(next http.Handler) http.Handler {
 }
 
 // addMiddleware adds necessary middleware to the handle.
-func addMiddleware(handler http.Handler, customContentType bool) http.Handler {
-	c := alice.New(hlog.NewHandler(logger.Log), createLoggerMiddleware())
+func addMiddleware(handler http.Handler, authorizedOnly, customContentType bool) http.Handler {
+	c := alice.New(hlog.NewHandler(logger.Log), middleware.Middleware, createLoggerMiddleware())
 
 	if !customContentType {
 		c = c.Append(responseTypeHeaderMiddleware)
 	}
 
 	c = c.Append(corsMiddleware)
+
+	if authorizedOnly {
+		c = c.Append(middleware.RequiredMiddleware)
+	}
 
 	return c.Then(handler)
 }

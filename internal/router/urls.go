@@ -15,6 +15,13 @@ func apiRoutes() []Route {
 			POST: http.HandlerFunc(handle.AuthorizeHandle),
 		},
 		{
+			Name:           "change_password",
+			Path:           "/change_password",
+			AuthorizedOnly: true,
+			PUT:            http.HandlerFunc(handle.PasswordChangeHandle),
+		},
+
+		{
 			Name:              "signing_key",
 			Path:              "/signing_key",
 			CustomContentType: true,

@@ -50,6 +50,19 @@ func New(email, name, password string) (*User, error) {
 	return u, nil
 }
 
+// ForUID queries user for specified uid.
+func ForUID(uid string) (*User, error) {
+	u := &User{}
+
+	query := `SELECT * FROM users WHERE uid=$1`
+	err := database.DB.Get(u, query, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
 // AuthorizeWithPassword authorizes user with provided email and password.
 // If email or password is incorrect, ErrInvalidCredentials is returned.
 func AuthorizeWithPassword(email, password string) (*User, error) {

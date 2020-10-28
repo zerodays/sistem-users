@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/urfave/cli/v2"
+	"github.com/zerodays/sistem-auth/token"
 	"github.com/zerodays/sistem-users/internal/cmd"
 	"github.com/zerodays/sistem-users/internal/config"
 	"github.com/zerodays/sistem-users/internal/database"
@@ -19,6 +20,9 @@ func main() {
 	// Initialize database.
 	database.Init()
 	defer database.Close()
+
+	// Set public signing key for access tokens.
+	token.SetKey(config.Login.SigningPublicKey)
 
 	// Create new CLI app.
 	app := cli.NewApp()

@@ -2,15 +2,10 @@ package user
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/zerodays/sistem-auth/token"
 	"github.com/zerodays/sistem-users/internal/config"
 	"time"
 )
-
-type TokenClaims struct {
-	jwt.StandardClaims
-
-	Permissions []string `json:"permissions"`
-}
 
 // CreateAccessToken creates new access token and signs it.
 func (u *User) CreateAccessToken() (string, error) {
@@ -22,7 +17,7 @@ func (u *User) CreateAccessToken() (string, error) {
 	now := time.Now()
 	expiresAt := now.Add(time.Duration(config.Login.TokenTtl) * time.Second)
 
-	claims := TokenClaims{
+	claims := token.Claims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiresAt.Unix(),
 			IssuedAt:  now.Unix(),
@@ -32,8 +27,8 @@ func (u *User) CreateAccessToken() (string, error) {
 		Permissions: permission,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	ss, err := token.SignedString(config.Login.SigningPrivateKey)
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	ss, err := accessToken.SignedString(config.Login.SigningPrivateKey)
 
 	return ss, err
 }
