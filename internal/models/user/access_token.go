@@ -8,11 +8,17 @@ import (
 
 type TokenClaims struct {
 	jwt.StandardClaims
-	// TODO: Permissions
+
+	Permissions []string `json:"permissions"`
 }
 
 // CreateAccessToken creates new access token and signs it.
 func (u *User) CreateAccessToken() (string, error) {
+	permission, err := u.Permissions()
+	if err != nil {
+		return "", err
+	}
+
 	now := time.Now()
 	expiresAt := now.Add(time.Duration(config.Login.TokenTtl) * time.Second)
 
@@ -22,6 +28,8 @@ func (u *User) CreateAccessToken() (string, error) {
 			IssuedAt:  now.Unix(),
 			Subject:   u.UID,
 		},
+
+		Permissions: permission,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)

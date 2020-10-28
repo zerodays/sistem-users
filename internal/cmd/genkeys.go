@@ -8,6 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"github.com/zerodays/sistem-users/internal/config"
 	"github.com/zerodays/sistem-users/internal/logger"
+	"github.com/zerodays/sistem-users/internal/util"
 	"os"
 	"path/filepath"
 )
@@ -71,18 +72,10 @@ func genKeys(c *cli.Context) error {
 	defer pubKeyFile.Close()
 
 	// Marshal public key and write it to file.
-	pubKeyBytes, err := x509.MarshalPKIXPublicKey(&privKey.PublicKey)
+	err = util.EncodePubKey(&privKey.PublicKey, pubKeyFile)
 	if err != nil {
 		logger.Log.Fatal().Err(err).Send()
 		return nil
-	}
-	pubKeyBlock := &pem.Block{
-		Type:  "PUBLIC KEY",
-		Bytes: pubKeyBytes,
-	}
-	err = pem.Encode(pubKeyFile, pubKeyBlock)
-	if err != nil {
-		logger.Log.Fatal().Err(err).Send()
 	}
 
 	return nil

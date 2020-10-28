@@ -14,5 +14,11 @@ func apiRoutes() []Route {
 			Path: "/authorize",
 			POST: http.HandlerFunc(handle.AuthorizeHandle),
 		},
+		{
+			Name:              "signing_key",
+			Path:              "/signing_key",
+			CustomContentType: true,
+			GET:               http.HandlerFunc(handle.SigningKeyHandle),
+		},
 	}
 }
