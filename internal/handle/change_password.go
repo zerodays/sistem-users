@@ -1,7 +1,6 @@
 package handle
 
 import (
-	"fmt"
 	"github.com/zerodays/sistem-auth/middleware"
 	"github.com/zerodays/sistem-auth/permission"
 	"github.com/zerodays/sistem-users/internal/handle/errors"
@@ -28,7 +27,6 @@ func PasswordChangeHandle(w http.ResponseWriter, r *http.Request) {
 
 	// Get authenticated user.
 	authUser := middleware.UserFromRequest(r)
-	fmt.Println(authUser.Permissions)
 	if authUser.HasPermission(permission.UserWrite) {
 		// Change password of specified user, since they have write permission.
 		err := user.SetPassword(passRequest.UserID, passRequest.NewPassword)

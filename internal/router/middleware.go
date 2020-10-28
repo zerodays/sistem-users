@@ -12,12 +12,21 @@ import (
 // createLoggerMiddleware creates logger middleware.
 func createLoggerMiddleware() func(handler http.Handler) http.Handler {
 	return hlog.AccessHandler(func(r *http.Request, status, size int, duration time.Duration) {
+		u := middleware.UserFromRequest(r)
+
+		var userID string
+		if u != nil {
+			userID = u.UID
+		}
+
 		hlog.FromRequest(r).Info().
 			Str("method", r.Method).
 			Stringer("url", r.URL).
 			Int("status", status).
 			Int("size", size).
 			Dur("duration", duration).
+			Bool("authenticated", u != nil).
+			Str("user_id", userID).
 			Send()
 	})
 }
