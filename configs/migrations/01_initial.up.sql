@@ -14,6 +14,7 @@ CREATE TABLE users
 CREATE TABLE authenticated_devices
 (
     user_id      TEXT REFERENCES users (uid) ON DELETE CASCADE      NOT NULL,
+    -- Token should be hashed for added security. --
     token        TEXT                                               NOT NULL,
 
     date_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,

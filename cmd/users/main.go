@@ -37,6 +37,7 @@ func main() {
 	app.Commands = []*cli.Command{
 		cmd.Serve,
 		cmd.GenKeys,
+		cmd.CreateUser,
 	}
 
 	// Run the app.

@@ -10,10 +10,9 @@ import (
 func apiRoutes() []Route {
 	return []Route{
 		{
-			Name:              "test",
-			Path:              "/test",
-			CustomContentType: true,
-			GET:               http.HandlerFunc(handle.TestHandle),
+			Name: "authorize",
+			Path: "/authorize",
+			POST: http.HandlerFunc(handle.AuthorizeHandle),
 		},
 	}
 }
