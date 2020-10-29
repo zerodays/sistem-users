@@ -78,7 +78,7 @@ func All() ([]*User, error) {
 }
 
 // Update updates user name and their permissions.
-func (u *User) Update(name string, permissions []permission.Permission) error {
+func (u *User) Update(name string, permissions []permission.Type) error {
 	// Begin transaction.
 	tx, err := database.DB.Beginx()
 	if err != nil {

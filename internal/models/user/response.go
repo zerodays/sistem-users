@@ -12,14 +12,14 @@ type Response struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
 
-	Permissions []permission.Permission `json:"permissions"`
+	Permissions []permission.Type `json:"permissions"`
 }
 
 func (u *User) Response() Response {
 	permissions, err := u.Permissions()
 	if err != nil {
 		logger.Log.Warn().Err(err).Send()
-		permissions = []permission.Permission{}
+		permissions = []permission.Type{}
 	}
 
 	return Response{

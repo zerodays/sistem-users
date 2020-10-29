@@ -13,15 +13,15 @@ import (
 )
 
 type newUserRequest struct {
-	Email       string                  `json:"email"`
-	Name        string                  `json:"name"`
-	Password    string                  `json:"password"`
-	Permissions []permission.Permission `json:"permissions"`
+	Email       string            `json:"email"`
+	Name        string            `json:"name"`
+	Password    string            `json:"password"`
+	Permissions []permission.Type `json:"permissions"`
 }
 
 type userEditRequest struct {
-	Name        string                  `json:"name"`
-	Permissions []permission.Permission `json:"permissions"`
+	Name        string            `json:"name"`
+	Permissions []permission.Type `json:"permissions"`
 }
 
 // ListUsersHandle lists all users in database. Only users with user:read permission
@@ -29,7 +29,7 @@ type userEditRequest struct {
 func ListUsersHandle(w http.ResponseWriter, r *http.Request) {
 	// Get authorized user and check their permissions.
 	u := middleware.UserFromRequest(r)
-	if !u.HasPermission(permission.UserRead) {
+	if !u.HasPermissions(permission.UserRead) {
 		errors.Response(w, errors.InsufficientPermissions)
 		return
 	}
@@ -52,7 +52,7 @@ func ListUsersHandle(w http.ResponseWriter, r *http.Request) {
 func NewUserHandle(w http.ResponseWriter, r *http.Request) {
 	// Get authorized user and check their permissions.
 	authUser := middleware.UserFromRequest(r)
-	if !authUser.HasPermission(permission.UserWrite) {
+	if !authUser.HasPermissions(permission.UserWrite) {
 		errors.Response(w, errors.InsufficientPermissions)
 		return
 	}
@@ -90,7 +90,7 @@ func NewUserHandle(w http.ResponseWriter, r *http.Request) {
 func UserHandle(w http.ResponseWriter, r *http.Request) {
 	// Get authorized user and check their permissions.
 	authUser := middleware.UserFromRequest(r)
-	if !authUser.HasPermission(permission.UserRead) {
+	if !authUser.HasPermissions(permission.UserRead) {
 		errors.Response(w, errors.InsufficientPermissions)
 		return
 	}
@@ -114,7 +114,7 @@ func UserHandle(w http.ResponseWriter, r *http.Request) {
 func EditUserHandle(w http.ResponseWriter, r *http.Request) {
 	// Get authorized user and check their permissions.
 	authUser := middleware.UserFromRequest(r)
-	if !authUser.HasPermission(permission.UserWrite) {
+	if !authUser.HasPermissions(permission.UserWrite) {
 		errors.Response(w, errors.InsufficientPermissions)
 		return
 	}
@@ -152,7 +152,7 @@ func EditUserHandle(w http.ResponseWriter, r *http.Request) {
 func DeleteUserHandle(w http.ResponseWriter, r *http.Request) {
 	// Get authorized user and check their permissions.
 	authUser := middleware.UserFromRequest(r)
-	if !authUser.HasPermission(permission.UserWrite) {
+	if !authUser.HasPermissions(permission.UserWrite) {
 		errors.Response(w, errors.InsufficientPermissions)
 		return
 	}

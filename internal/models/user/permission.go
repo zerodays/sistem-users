@@ -8,8 +8,8 @@ import (
 )
 
 // Permissions returns slice of permissions for user.
-func (u *User) Permissions() ([]permission.Permission, error) {
-	permissions := make([]permission.Permission, 0)
+func (u *User) Permissions() ([]permission.Type, error) {
+	permissions := make([]permission.Type, 0)
 
 	query := `SELECT permission FROM user_permissions WHERE user_id=$1`
 	err := database.DB.Select(&permissions, query, u.UID)
@@ -20,8 +20,34 @@ func (u *User) Permissions() ([]permission.Permission, error) {
 	return permissions, nil
 }
 
+// addPermission adds permissions to user using current transaction.
+// It also handles implicit permissions.
+func (u *User) addPermission(perm permission.Type, tx *sqlx.Tx) error {
+	// Add implicit permission.
+	for _, implicitPerm := range perm.ImplicitPermissions {
+		err := u.addPermission(implicitPerm, tx)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Add the permission.
+	insert := `INSERT INTO user_permissions (user_id, permission) VALUES ($1, $2) ON CONFLICT DO NOTHING`
+	_, err := tx.Exec(insert, u.UID, perm)
+	if err != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			logger.Log.Warn().Err(err).Send()
+		}
+
+		return err
+	}
+
+	return nil
+}
+
 // setPermissions sets user permission with transaction.
-func (u *User) setPermissions(permissions []permission.Permission, tx *sqlx.Tx) error {
+func (u *User) setPermissions(permissions []permission.Type, tx *sqlx.Tx) error {
 	// Remove current permissions.
 	del := `DELETE FROM user_permissions WHERE user_id=$1`
 	_, err := tx.Exec(del, u.UID)
@@ -36,14 +62,8 @@ func (u *User) setPermissions(permissions []permission.Permission, tx *sqlx.Tx) 
 
 	// Add permissions.
 	for _, perm := range permissions {
-		insert := `INSERT INTO user_permissions (user_id, permission) VALUES ($1, $2)`
-		_, err := tx.Exec(insert, u.UID, perm)
+		err = u.addPermission(perm, tx)
 		if err != nil {
-			rollbackErr := tx.Rollback()
-			if rollbackErr != nil {
-				logger.Log.Warn().Err(err).Send()
-			}
-
 			return err
 		}
 	}
@@ -51,7 +71,7 @@ func (u *User) setPermissions(permissions []permission.Permission, tx *sqlx.Tx) 
 	return nil
 }
 
-func (u *User) SetPermissions(permissions []permission.Permission) error {
+func (u *User) SetPermissions(permissions []permission.Type) error {
 	// Create new transaction.
 	tx, err := database.DB.Beginx()
 	if err != nil {

@@ -277,6 +277,10 @@ github.com/zerodays/sistem-auth v0.0.0-20201028193554-6602c02c0a53 h1:yYj670INzD
 github.com/zerodays/sistem-auth v0.0.0-20201028193554-6602c02c0a53/go.mod h1:YTuMEG7TDHPXE6dfP6DZXksO/V5e1o1XrCmS/6JbVzg=
 github.com/zerodays/sistem-auth v0.0.0-20201028194343-0c1313a7533a h1:D7e1QBkgPQYCitBiCoY+2L0Glay3Xl8I3NNSrw/xbD4=
 github.com/zerodays/sistem-auth v0.0.0-20201028194343-0c1313a7533a/go.mod h1:YTuMEG7TDHPXE6dfP6DZXksO/V5e1o1XrCmS/6JbVzg=
+github.com/zerodays/sistem-auth v0.0.0-20201029094241-7ea082ef300d h1:wNEYmaaAJx9hKrYIa6vOFuSQN/gSvE2w00qiUmYZxm4=
+github.com/zerodays/sistem-auth v0.0.0-20201029094241-7ea082ef300d/go.mod h1:YTuMEG7TDHPXE6dfP6DZXksO/V5e1o1XrCmS/6JbVzg=
+github.com/zerodays/sistem-auth v0.0.0-20201029094638-2b49c6ced576 h1:kTCwxteVwioMchd3WhQ5ZD6RGL1cGvli8nZA2/mccJM=
+github.com/zerodays/sistem-auth v0.0.0-20201029094638-2b49c6ced576/go.mod h1:YTuMEG7TDHPXE6dfP6DZXksO/V5e1o1XrCmS/6JbVzg=
 gitlab.com/nyarla/go-crypt v0.0.0-20160106005555-d9a5dc2b789b/go.mod h1:T3BPAOm2cqquPa0MKWeNkmOM5RQsRhkrwMWonFMN7fE=
 go.mongodb.org/mongo-driver v1.1.0/go.mod h1:u7ryQJ+DOzQmeO7zB6MHyr8jkEQvC8vH7qLUO4lqsUM=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=

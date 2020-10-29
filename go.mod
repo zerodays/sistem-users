@@ -12,7 +12,7 @@ require (
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/rs/zerolog v1.20.0
 	github.com/urfave/cli/v2 v2.2.0
-	github.com/zerodays/sistem-auth v0.0.0-20201028194343-0c1313a7533a
+	github.com/zerodays/sistem-auth v0.0.0-20201029094638-2b49c6ced576
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 	gopkg.in/ini.v1 v1.62.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0

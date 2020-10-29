@@ -27,7 +27,7 @@ func PasswordChangeHandle(w http.ResponseWriter, r *http.Request) {
 
 	// Get authenticated user.
 	authUser := middleware.UserFromRequest(r)
-	if authUser.HasPermission(permission.UserWrite) {
+	if authUser.HasPermissions(permission.UserWrite) {
 		// Change password of specified user, since they have write permission.
 		err := user.SetPassword(passRequest.UserID, passRequest.NewPassword)
 		if err != nil {
