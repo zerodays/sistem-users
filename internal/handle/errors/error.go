@@ -19,6 +19,11 @@ var (
 		Code:       "invalid_credentials",
 	}
 
+	InsufficientPermissions = ResponseError{
+		StatusCode: http.StatusForbidden,
+		Code:       "insufficient_permission",
+	}
+
 	DatabaseError = ResponseError{
 		StatusCode: http.StatusInternalServerError,
 		Code:       "database_error",

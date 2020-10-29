@@ -22,6 +22,23 @@ func apiRoutes() []Route {
 		},
 
 		{
+			Name:           "users",
+			Path:           "/users",
+			AuthorizedOnly: true,
+			GET:            http.HandlerFunc(handle.ListUsersHandle),
+			POST:           http.HandlerFunc(handle.NewUserHandle),
+		},
+
+		{
+			Name:           "user",
+			Path:           "/users/{uid}",
+			AuthorizedOnly: true,
+			GET:            http.HandlerFunc(handle.UserHandle),
+			PUT:            http.HandlerFunc(handle.EditUserHandle),
+			DELETE:         http.HandlerFunc(handle.DeleteUserHandle),
+		},
+
+		{
 			Name:              "signing_key",
 			Path:              "/signing_key",
 			CustomContentType: true,

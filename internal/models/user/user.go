@@ -1,10 +1,11 @@
 package user
 
 import (
-	"database/sql"
 	"errors"
 	"github.com/google/uuid"
+	"github.com/zerodays/sistem-auth/permission"
 	"github.com/zerodays/sistem-users/internal/database"
+	"github.com/zerodays/sistem-users/internal/logger"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -63,51 +64,62 @@ func ForUID(uid string) (*User, error) {
 	return u, nil
 }
 
-// AuthorizeWithPassword authorizes user with provided email and password.
-// If email or password is incorrect, ErrInvalidCredentials is returned.
-func AuthorizeWithPassword(email, password string) (*User, error) {
-	u := &User{}
+// All returns a slice of all users.
+func All() ([]*User, error) {
+	var users []*User
 
-	// Get user for specified email.
-	query := `SELECT * FROM users WHERE email=$1`
-	err := database.DB.Get(u, query, email)
-
-	// Handle errors.
+	query := `SELECT * FROM users ORDER BY name`
+	err := database.DB.Select(&users, query)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrInvalidCredentials
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 
-	// Check that passwords match.
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-	if err != nil {
-		return nil, ErrInvalidCredentials
-	}
-
-	return u, nil
+	return users, nil
 }
 
-// AuthorizeWithToken authorizes user with provided token.
-// If user for token does not exist, ErrInvalidCredentials is returned.
-func AuthorizeWithToken(token string) (*User, error) {
-	u := &User{}
-
-	// Get user with token.
-	query := `SELECT users.* FROM authenticated_devices INNER JOIN users ON authenticated_devices.user_id = users.uid
-		WHERE token=$1`
-	err := database.DB.Get(u, query, token)
-
-	// Handle errors.
+// Update updates user name and their permissions.
+func (u *User) Update(name string, permissions []permission.Permission) error {
+	// Begin transaction.
+	tx, err := database.DB.Beginx()
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, ErrInvalidCredentials
-		} else {
-			return nil, err
-		}
+		return err
 	}
 
-	return u, nil
+	// Set new name.
+	update := `UPDATE users SET name=$2 WHERE uid=$1 RETURNING *`
+	err = tx.Get(u, update, u.UID, name)
+	if err != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			logger.Log.Warn().Err(err).Send()
+		}
+
+		return err
+	}
+
+	// Set permissions.
+	err = u.setPermissions(permissions, tx)
+	if err != nil {
+		return err
+	}
+
+	// Commit transaction.
+	err = tx.Commit()
+	if err != nil {
+		rollbackErr := tx.Rollback()
+		if rollbackErr != nil {
+			logger.Log.Warn().Err(err).Send()
+		}
+
+		return err
+	}
+
+	return nil
+}
+
+// Delete deletes user with specified uid.
+func Delete(uid string) error {
+	del := `DELETE FROM users WHERE uid=$1`
+	_, err := database.DB.Exec(del, uid)
+	return err
 }
