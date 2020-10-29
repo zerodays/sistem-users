@@ -11,6 +11,7 @@ var (
 
 	Database struct {
 		Host     string `ini:"HOST"`
+		Port     int    `ini:"PORT"`
 		User     string `ini:"USER"`
 		Password string `ini:"PASSWORD"`
 		DbName   string `ini:"DB_NAME"`

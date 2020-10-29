@@ -16,8 +16,9 @@ var DB *sqlx.DB
 // Init initializes the database.
 func Init() {
 	// Create database URL.
-	databaseUrl := fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=%s",
+	databaseUrl := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		config.Database.Host,
+		config.Database.Port,
 		config.Database.User,
 		config.Database.Password,
 		config.Database.DbName,
