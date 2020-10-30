@@ -1,0 +1,20 @@
+sudo: required
+services:
+- docker
+env:
+  global:
+  - IMAGE_NAME=zdays/sistem-users
+  - secure: gFhT10BbVwkaiFtVYx/GnG7Je8vlwg9ye824AGQIwcGpq5m/16venoPvHM1QE9UvnPX6rxfWYb2hudHiF4sS9tIcc0nL9jR3ae42kv0xJfdOKZzgmmrW5MFaPQ4MZAMnm0umwD+Yc+nvPA0jQjnirM9nL+GkOsp1axBAM5fxRXBJWxF48f0CKd0KfVkhjF90KdB4CVzBljkV6yeEvcU8WZyqycjmE7uE0BKAz8p25lnJ7IJWPlnrQZNFGfMCJJVOQRc2Nt82ZZ8s98Khlwkoe0RV+vddlx4AegmBZrU+7NlBc3Hn24NRwXkqPP9fBq1kiK+V0NuG+9peG8N1Cocfqxm8RwadkPlb3cK5xPhDJY/8Xyw9HG7WUcIbBfmf/KcBXUrZXSMWuXwa9pLv94M1O7J2VuXl9Yg6ZPZST8TGXXQGSSrfQtrKCqOprVSkbNe+81BMVFuKJfkDZUNjwINrxa3q1t66Bn1VKoNtFW+eOuurBPg7NprWI8y3Lq4jB1/D1nx/PKgydvZ3mFJKVffAunk8tGkRn/MXeYddeLUY25BuxkY8HWtYQxPyQ+JB+DLQDe/9Z4FUN4VFXoaAexpTeaGkKw47g8L6eOcESM2jO2oprYSikbB+2DfKN+Fj+xwPe7vEQD7TLQT/ANYn6ZB/DOUPMK+qn3tFz207XJ8F3mU=
+  - secure: kjHvvyU5kATE+TLZEMXxf7kRBNNOriOv+S8Djh6uUIlrAgFy+DOZ+RWwIK+PB9t6JcBwoAFV2zgd/QXLtpDII7SN/xbdWjst6Nrf3Z4rfp4z6CTw1fYLWn0pFbwZjVXSvFiwYqJesQYj/YJoADo6XMWDrnZoeXSzaKp5ST73KKABA82U8qpRc+utme614YwHFxNKziu1iXB9VdscAwWbFNlijlrIEDXMLG2h/Y4jx4ambmm/hU82+i5teukb5NpqM4tWfIIcy0V2OdBN+Pm454nCSIB++Qj/bLzHF/5X1iCpHj92IUL0IoXhdXAlLoW9czXxEn85KKq9SRRAGWeSzhZYYDUe5pSawzBpxSouuPsqIqXxwHB1CTvLHQgceucPQgqeY5P0gOf36UoHzLfY0ACYpH7MOvP6e+mPHXcyKIpLty8isUu2NNbtfSJpiHYl+DZrSA+HxkW3wJimpGfJq5XVxuoX2LtZ4SlrAPO95nAb1o+U7Lz6UbqlVcmN3E/pzDdN0aPTYIVZyrTFwDSqU/VjIXKt7IpzTlkD/5bpB1DhppjY6HEwyyc7ybjQRy6MR5yy9TWuwUS4bXHvAS0QwgUSvBwQEx1+2RGchbWUfBhxjM+f6TblPm2iKwuBnUGoazODohFQCteqo/G1bSrUDgn/X9YUuyyga8RtMQq4Pps=
+
+script:
+  - docker build -t "$IMAGE_NAME" .
+
+before_deploy:
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
+  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${TRAVIS_JOB_NUMBER}"
+
+deploy:
+  provider: script
+  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${TRAVIS_JOB_NUMBER}"
