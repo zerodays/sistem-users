@@ -15,17 +15,12 @@ func Load() {
 	// Get current workdir.
 	WorkDir = os.Getenv("USERS_WORKDIR")
 
-	// Path to config photos.
-	confPath := filepath.Join(WorkDir, "conf", "config.ini")
-
-	// Create default config if needed.
-	err := createDefaultConfig(confPath)
+	// Load default config
+	data, err := Asset("config.ini")
 	if err != nil {
-		log.Fatalf("Could not create default config: %v\n", err)
+		log.Fatal(err)
 	}
-
-	// Load config file.
-	cfg, err := ini.Load(confPath)
+	cfg, err := ini.Load(data)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,24 +30,28 @@ func Load() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	getFromEnvironment("server", &Server)
 
 	// Load database config.
 	err = cfg.Section("database").MapTo(&Database)
 	if err != nil {
 		log.Fatal(err)
 	}
+	getFromEnvironment("database", &Database)
 
 	// Load logs section.
 	err = cfg.Section("logs").MapTo(&Logs)
 	if err != nil {
 		log.Fatal(err)
 	}
+	getFromEnvironment("logs", &Logs)
 
 	// Load login section.
 	err = cfg.Section("login").MapTo(&Login)
 	if err != nil {
 		log.Fatal(err)
 	}
+	getFromEnvironment("login", &Login)
 
 	// Load keys used for signing.
 	err = loadSigningKeys()
@@ -60,41 +59,6 @@ func Load() {
 		log.Printf("Could not load signing keys (error: %s). You can generate them with `genkeys` command.\n",
 			err.Error())
 	}
-}
-
-// createDefaultConfig creates default settings file at `path`
-// if settings file does not yet exist.
-func createDefaultConfig(path string) error {
-	// Check if config photos already exists.
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		log.Printf("No config found. Creating default config at \"%s\"\n", path)
-
-		// Create new config file.
-		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
-		if err != nil {
-			return err
-		}
-
-		f, err := os.Create(path)
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		// Get default config file to be written.
-		data, err := Asset("config.ini")
-		if err != nil {
-			return err
-		}
-
-		// Write config file.
-		_, err = f.Write(data)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // loadSigningKeys loads private and public RSA key used for signing authentication tokens.
