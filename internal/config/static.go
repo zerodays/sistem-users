@@ -32,10 +32,11 @@ var (
 	Login struct {
 		TokenTtl int `ini:"TOKEN_TTL"`
 
+		SigningPrivateKeyLocation string `ini:"SIGNING_PRIVATE_KEY_LOCATION"`
+		SigningPublicKeyLocation  string `ini:"SIGNING_PUBLIC_KEY_LOCATION"`
+
 		// Private and public keys used for signing tokens.
 		SigningPrivateKey *rsa.PrivateKey
 		SigningPublicKey  *rsa.PublicKey
 	}
-
-	WorkDir string
 )

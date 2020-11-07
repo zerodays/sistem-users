@@ -6,25 +6,32 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"github.com/urfave/cli/v2"
-	"github.com/zerodays/sistem-users/internal/config"
 	"github.com/zerodays/sistem-users/internal/logger"
 	"github.com/zerodays/sistem-users/internal/util"
 	"os"
 	"path/filepath"
 )
 
-const flagBits = "bits"
+const (
+	flagBits   = "bits"
+	flagOutDir = "outDir"
+)
 
 var GenKeys = &cli.Command{
 	Name:  "genkeys",
 	Usage: "Generate keys for signing authentication tokens.",
 	Description: `Generates private and public RSA key pair used for signing authentication token. Outputs
-	 to <workdir>/conf/privkey.pem and <workid>/conf/pubkey.pem and will overwrite existing files.`,
+	 to <outDir>/privkey.pem and <outDir>/pubkey.pem and will overwrite existing files.`,
 	Flags: []cli.Flag{
 		&cli.IntFlag{
 			Name:  flagBits,
 			Usage: "Size of RSA key to generate.",
 			Value: 2048,
+		},
+		&cli.StringFlag{
+			Name:  flagOutDir,
+			Usage: "Output directory for generated keys.",
+			Value: "conf",
 		},
 	},
 	Action: genKeys,
@@ -38,8 +45,16 @@ func genKeys(c *cli.Context) error {
 		return nil
 	}
 
+	// Create output directory.
+	outDir := c.String(flagOutDir)
+	err = os.MkdirAll(outDir, os.ModePerm)
+	if err != nil {
+		logger.Log.Fatal().Err(err).Send()
+		return nil
+	}
+
 	// Open file for private key.
-	privKeyPath := filepath.Join(config.WorkDir, "conf", "privkey.pem")
+	privKeyPath := filepath.Join(outDir, "privkey.pem")
 	privKeyFile, err := os.Create(privKeyPath)
 	if err != nil {
 		logger.Log.Fatal().Err(err).Send()
@@ -63,7 +78,7 @@ func genKeys(c *cli.Context) error {
 	}
 
 	// Open file for public key.
-	pubKeyPath := filepath.Join(config.WorkDir, "conf", "pubkey.pem")
+	pubKeyPath := filepath.Join(outDir, "pubkey.pem")
 	pubKeyFile, err := os.Create(pubKeyPath)
 	if err != nil {
 		logger.Log.Fatal().Err(err).Send()

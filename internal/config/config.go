@@ -7,14 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 )
 
 // Load loads config and secret
 func Load() {
-	// Get current workdir.
-	WorkDir = os.Getenv("USERS_WORKDIR")
-
 	// Load default config
 	data, err := Asset("config.ini")
 	if err != nil {
@@ -64,8 +60,7 @@ func Load() {
 // loadSigningKeys loads private and public RSA key used for signing authentication tokens.
 func loadSigningKeys() error {
 	// Open file for private key.
-	privKeyPath := filepath.Join(WorkDir, "conf", "privkey.pem")
-	privFile, err := os.Open(privKeyPath)
+	privFile, err := os.Open(Login.SigningPrivateKeyLocation)
 	if err != nil {
 		return err
 	}
@@ -84,8 +79,7 @@ func loadSigningKeys() error {
 	}
 
 	// Open file for public key
-	pubKeyPath := filepath.Join(WorkDir, "conf", "pubkey.pem")
-	pubFile, err := os.Open(pubKeyPath)
+	pubFile, err := os.Open(Login.SigningPublicKeyLocation)
 	if err != nil {
 		return err
 	}
