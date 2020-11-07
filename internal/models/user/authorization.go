@@ -67,7 +67,7 @@ func (u *User) CreateAccessToken() (string, error) {
 	}
 
 	now := time.Now()
-	expiresAt := now.Add(time.Duration(config.Login.TokenTtl) * time.Second)
+	expiresAt := now.Add(time.Duration(config.Login.TokenTtl()) * time.Second)
 
 	claims := token.Claims{
 		StandardClaims: jwt.StandardClaims{

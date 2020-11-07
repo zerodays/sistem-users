@@ -25,7 +25,7 @@ func serve(_ *cli.Context) error {
 	r := router.NewRouter()
 
 	// Start listening for connections.
-	listenAddress := fmt.Sprintf("%s:%d", config.Server.ListenAddress, config.Server.Port)
+	listenAddress := fmt.Sprintf("%s:%d", config.Server.ListenAddress(), config.Server.Port())
 	logger.Log.Fatal().Err(http.ListenAndServe(listenAddress, r)).Send()
 
 	return nil

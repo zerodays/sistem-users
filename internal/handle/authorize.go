@@ -82,7 +82,7 @@ func authorizeWithPassword(w http.ResponseWriter, authRequest *authorizationRequ
 	res, _ := json.Marshal(map[string]interface{}{
 		"refresh_token":    dev.Token,
 		"access_token":     token,
-		"access_token_ttl": config.Login.TokenTtl,
+		"access_token_ttl": config.Login.TokenTtl(),
 	})
 	_, _ = w.Write(res)
 }

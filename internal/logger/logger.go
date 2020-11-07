@@ -18,17 +18,17 @@ func Init() {
 	// Create writers that are writing logs.
 	var writers []io.Writer
 
-	if config.Logs.ConsoleLogging {
+	if config.Logs.ConsoleLogging() {
 		writers = append(writers, zerolog.ConsoleWriter{Out: os.Stderr})
 	}
-	if config.Logs.FileLogging {
+	if config.Logs.FileLogging() {
 		writers = append(writers, newRollingFile())
 	}
 
 	multiWriter := io.MultiWriter(writers...)
 
 	// Configure shared logger instance.
-	Log = zerolog.New(multiWriter).Level(zerolog.Level(config.Logs.LogLevel)).
+	Log = zerolog.New(multiWriter).Level(zerolog.Level(config.Logs.LogLevel())).
 		With().
 		Timestamp().
 		Caller().
@@ -39,7 +39,7 @@ func Init() {
 // and rolls it over after size or age exceeds the specified values.
 func newRollingFile() io.Writer {
 	// Create logs directory.
-	directory := filepath.Dir(config.Logs.LogPath)
+	directory := filepath.Dir(config.Logs.LogPath())
 	err := os.MkdirAll(directory, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
@@ -48,9 +48,9 @@ func newRollingFile() io.Writer {
 
 	// Create new rolling photos writer.
 	return &lumberjack.Logger{
-		Filename:   config.Logs.LogPath,
-		MaxSize:    config.Logs.MaxSize,
-		MaxAge:     config.Logs.MaxAge,
-		MaxBackups: config.Logs.MaxBackups,
+		Filename:   config.Logs.LogPath(),
+		MaxSize:    config.Logs.MaxSize(),
+		MaxAge:     config.Logs.MaxAge(),
+		MaxBackups: config.Logs.MaxBackups(),
 	}
 }
