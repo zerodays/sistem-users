@@ -17,12 +17,38 @@ spec:
           name: sistem-users
           env:
             - name: SISTEM_USERS_DATABASE_HOST
-              value: 123.123.123.123
+              value: db.recompile.it
+            - name: SISTEM_USERS_DATABASE_DB_NAME
+              value: sistem_users
+            - name: SISTEM_USERS_DATABASE_SSL_MODE
+              value: require
+            - name: SISTEM_USERS_DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sistem-db
+                  key: username
+            - name: SISTEM_USERS_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sistem-db
+                  key: password
+            - name: SISTEM_USERS_LOGIN_SIGNING_PRIVATE_KEY_LOCATION
+              value: "/app/keys/privkey.pem"
+            - name: SISTEM_USERS_LOGIN_SIGNING_PUBLIC_KEY_LOCATION
+              value: "/app/keys/pubkey.pem"
             # TODO env
+          volumeMounts:
+            - name: keys
+              mountPath: "/app/keys"
+              readOnly: true
           ports:
             - containerPort: 8080
               name: server
               protocol: TCP
+      volumes:
+        - name: keys
+          secret:
+            secretName: user-keys
 
 ---
 
