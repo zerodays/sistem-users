@@ -26,6 +26,7 @@ func Load() {
 
 	// Create gonfig instance.
 	cfg = gonfig.New(iniProvider, environment.Provider{})
+	cfg.AppName = "sistem_users"
 
 	// Load keys used for signing.
 	err = Login.LoadKeys()
