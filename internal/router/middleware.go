@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/justinas/alice"
+	"github.com/rcrowley/go-metrics"
 	"github.com/rs/zerolog/hlog"
 	"github.com/zerodays/sistem-auth/middleware"
 	"github.com/zerodays/sistem-users/internal/logger"
@@ -64,9 +65,19 @@ func responseTypeHeaderMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// metricsMiddleware counts number of requests.
+func metricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		meter := metrics.GetOrRegisterMeter("requests", metrics.DefaultRegistry)
+		meter.Mark(1)
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 // addMiddleware adds necessary middleware to the handle.
 func addMiddleware(handler http.Handler, authorizedOnly, customContentType bool) http.Handler {
-	c := alice.New(hlog.NewHandler(logger.Log), middleware.Middleware, createLoggerMiddleware())
+	c := alice.New(hlog.NewHandler(logger.Log), middleware.Middleware, createLoggerMiddleware(), metricsMiddleware)
 
 	if !customContentType {
 		c = c.Append(responseTypeHeaderMiddleware)

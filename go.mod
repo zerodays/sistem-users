@@ -10,6 +10,7 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/justinas/alice v1.2.0
 	github.com/lib/pq v1.8.0 // indirect
+	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0
 	github.com/rs/zerolog v1.20.0
 	github.com/urfave/cli/v2 v2.2.0
 	github.com/zerodays/gonfig v0.0.0-20201107204854-ef963eeaec23

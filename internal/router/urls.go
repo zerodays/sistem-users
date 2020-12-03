@@ -60,5 +60,11 @@ func apiRoutes() []Route {
 			Path: "/health/readiness",
 			GET:  http.HandlerFunc(handle.ReadinessHandle),
 		},
+
+		{
+			Name: "metrics",
+			Path: "/metrics",
+			GET:  http.HandlerFunc(handle.MetricsHandle),
+		},
 	}
 }
