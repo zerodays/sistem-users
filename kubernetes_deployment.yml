@@ -46,13 +46,13 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /health/liveness
+              path: /api/v1/health/liveness
               port: server
             initialDelaySeconds: 2
             periodSeconds: 3
           readinessProbe:
             httpGet:
-              path: /health/readiness
+              path: /api/v1/health/readiness
               port: server
             initialDelaySeconds: 2
             periodSeconds: 3
@@ -70,7 +70,7 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 8080
+    - port: 80
       protocol: TCP
       targetPort: server
   selector:
