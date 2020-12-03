@@ -24,7 +24,7 @@ func apiRoutes() []Route {
 		{
 			Name:           "users",
 			Path:           "/users",
-			AuthorizedOnly: true,
+			AuthorizedOnly: false, // TODO: Remove this in production, only for mejnik 1.
 			GET:            http.HandlerFunc(handle.ListUsersHandle),
 			POST:           http.HandlerFunc(handle.NewUserHandle),
 		},
