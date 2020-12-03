@@ -44,5 +44,21 @@ func apiRoutes() []Route {
 			CustomContentType: true,
 			GET:               http.HandlerFunc(handle.SigningKeyHandle),
 		},
+
+		{
+			Name: "kill_switch",
+			Path: "/health/kill_switch",
+			POST: http.HandlerFunc(handle.KillSwitchHandle),
+		},
+		{
+			Name: "liveness_probe",
+			Path: "/health/liveness",
+			GET:  http.HandlerFunc(handle.LivenessHandle),
+		},
+		{
+			Name: "readiness_probe",
+			Path: "/health/readiness",
+			GET:  http.HandlerFunc(handle.ReadinessHandle),
+		},
 	}
 }

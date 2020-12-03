@@ -36,7 +36,6 @@ spec:
               value: "/app/keys/privkey.pem"
             - name: SISTEM_USERS_LOGIN_SIGNING_PUBLIC_KEY_LOCATION
               value: "/app/keys/pubkey.pem"
-            # TODO env
           volumeMounts:
             - name: keys
               mountPath: "/app/keys"
@@ -45,6 +44,18 @@ spec:
             - containerPort: 8080
               name: server
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: server
+            initialDelaySeconds: 2
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: server
+            initialDelaySeconds: 2
+            periodSeconds: 3
       volumes:
         - name: keys
           secret:
